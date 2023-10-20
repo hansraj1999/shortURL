@@ -3,7 +3,6 @@ import logging.config
 from fastapi import FastAPI
 from routers import short_url
 from fastapi.middleware.cors import CORSMiddleware
-from repository.decode import decode_url
 from opentelemetry.instrumentation.redis import RedisInstrumentor
 from opentelemetry.instrumentation.fastapi import FastAPIInstrumentor
 import logging
