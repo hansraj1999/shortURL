@@ -1,8 +1,9 @@
 venv/
 __pycache__
-*.pyc
 .DS_Store
 .vscode/
 .idea
 *.project
 *.pydevproject
+*.pyc
+__pycache__/

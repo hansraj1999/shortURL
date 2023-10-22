@@ -5,6 +5,7 @@ from constants import LOGGING_CONFIG
 import os
 from utils.database_manager import DatabaseManager
 
+
 class DockerConfig:
     REDIS_CONNECTION_STRING =  os.getenv("REDIS_CONNECTION_STRING", "localhost")
     REDIS_PORT = os.getenv("REDIS_PORT", 6379)

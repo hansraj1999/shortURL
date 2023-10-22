@@ -8,9 +8,10 @@ logger = logging.getLogger(__name__)
 
 
 class Handler:
-    def __init__(self, long_url, group_guid) -> None:
+    def __init__(self, long_url, group_guid, user_data) -> None:
         self.long_url = long_url
         self.group_guid = group_guid
+        self.user_data = user_data
 
     def handle(self) -> str:
         """handle."""

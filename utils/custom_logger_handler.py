@@ -67,7 +67,6 @@ class LogFormatter(logging.Formatter):
             "severity_number": record.levelno,
             "severity_text": record.levelname,
             "attributes": custom_attributes,
-            "exc_info": exc_info,
             "timestamp": datetime.datetime.utcfromtimestamp(record.created).strftime("%Y-%m-%dT%H:%M:%S.%fZ"),
             "trace_id": trace_id,
             "span_id": span_id,
@@ -78,11 +77,12 @@ class LogFormatter(logging.Formatter):
                 **self.resource_attributes
             }
         }
+        if exc_info:
+            record_dict.update({"exc_info": exc_info})
         try:
             message_string = ujson.dumps(
                 record_dict)
         except Exception as e:
-            logger.exception(e)
             message_string = json.dumps(
                 record_dict, indent=None, default=str)
         return message_string
