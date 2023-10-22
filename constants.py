@@ -1,6 +1,6 @@
 from utils.custom_logger_handler import LogFormatter
 
-
+DATABASE_NAME = "short_url"
 LOCK_KEY = "counter_lock"
 LOGGING_CONFIG = {
     "version": 1,
