@@ -1,22 +1,17 @@
 from sqids import Sqids
 import redis
-import socket
 import logging.config
 from constants import LOGGING_CONFIG
-
+import os
+from utils.database_manager import DatabaseManager
 
 class DockerConfig:
-    REDIS_CONNECTION_STRING = "localhost"
-    REDIS_PORT = "6379"
-    # take from env
+    REDIS_CONNECTION_STRING =  os.getenv("REDIS_CONNECTION_STRING", "localhost")
+    REDIS_PORT = os.getenv("REDIS_PORT", 6379)
     allowed_chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
-    counter = 0  # take from zookeeper or sql or redis or mongodb
     sqids = Sqids(alphabet=allowed_chars)
-    redis_connector = redis.Redis(
-        host=REDIS_CONNECTION_STRING, port=REDIS_PORT, decode_responses=True)
-    log_level = "DEBUG"  # take from Env var
-    resource_attributes = {
-        "service.name": "SHORTURL",
-        "service.instance.id": socket.gethostname()
-    }
+    MONGO_CONNECTION_STRING = os.getenv("MONGO_CONNECTION_STRING", "mongodb://mongo:27017")
+    MONGO_CONNECTION_PORT = os.getenv("MONGO_CONNECTION_PORT", 27017)
     logging.config.dictConfig(LOGGING_CONFIG)
+
+    backend = DatabaseManager(REDIS_CONNECTION_STRING, REDIS_PORT, MONGO_CONNECTION_STRING)

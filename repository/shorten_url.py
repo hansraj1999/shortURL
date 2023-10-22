@@ -1,6 +1,8 @@
 from repository.encode import encode_url
-from repository.redis_manager import increment_counter
 import logging
+from config import config
+from constants import LOCK_KEY
+
 
 logger = logging.getLogger(__name__)
 
@@ -10,7 +12,8 @@ class Handler:
         self.long_url = long_url
         self.group_guid = group_guid
 
-    def handle(self):
-        counter = increment_counter()
-        print("counter_handle", counter)
+    def handle(self) -> str:
+        """handle."""
+        counter = config.backend.increment_counter(LOCK_KEY)
+        logger.info(f"counter: {counter}")
         return encode_url(counter)
