@@ -31,3 +31,9 @@ class InsertUrl(BaseModel):
     actual_url: str
     created_at: str
     updated_at: str
+    has_custom_domain: bool = False
+    custom_domain: Optional[str] = None
+    hits: int = 0
+
+class ShortUrlHash(BaseModel):
+    url_hash: str

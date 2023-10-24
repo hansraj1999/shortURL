@@ -2,7 +2,10 @@ from utils.singleton import SingletonMeta
 import redis
 import pymongo
 from constants import DATABASE_NAME
-from schemas import InsertUrl
+from schemas import InsertUrl, ShortUrlHash
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 class DatabaseManager(metaclass=SingletonMeta):
@@ -18,6 +21,13 @@ class DatabaseManager(metaclass=SingletonMeta):
             return counter
 
     def insert_into_mongo(self, data: InsertUrl):
-        print(data)
-        InsertUrl(**data)
+        logger.info("insert_into_mongo: %s", data)  
+        data = InsertUrl(**data).__dict__
         self.mongo_connection["urls"].insert_one(data)
+        
+    def fetch_long_url(self, url_hash: str):
+        url_hash = str(url_hash)
+        logger.info(f"fetch_long_url: {url_hash}")
+        return self.mongo_connection["urls"].find_one({
+            "url_hash": url_hash
+        })

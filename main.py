@@ -8,6 +8,8 @@ from opentelemetry.instrumentation.fastapi import FastAPIInstrumentor
 from opentelemetry.instrumentation.pymongo import PymongoInstrumentor
 from opentelemetry.instrumentation.requests import RequestsInstrumentor
 from opentelemetry.instrumentation.aiohttp_client import AioHttpClientInstrumentor
+from fastapi.responses import RedirectResponse
+from repository.redirect_to_long_url import Handler
 
 import logging
 
@@ -35,4 +37,11 @@ def start_server():
     @app.get("/")
     async def read_item():
         return {"home_page": "hello"}
+    
+    @app.get("/{short_url_hash}")
+    async def redirect_to_long_url(short_url_hash: str):
+        handler = Handler(short_url_hash)
+        url = handler.handle()
+        logger.info(f"URL to be redirected to: {url} from hash: {short_url_hash}")
+        return RedirectResponse(url=url, status_code=302)
     return app
