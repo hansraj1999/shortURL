@@ -16,7 +16,8 @@ services:
       - ".env"
     tty: true
     ports:
-      - "8000:80"
+      - "8000:8000"
+
   mongo:
     image: mongo:7.0-rc
     container_name: bithash_mongo
