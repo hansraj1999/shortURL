@@ -28,6 +28,7 @@ services:
       - bithash
     volumes:
       - $mongoSharedVolume:/data/db
+
   redis:
     image: redis:7.2.3-alpine3.18
     container_name: bithash_redis
@@ -38,7 +39,7 @@ services:
       - bithash
     volumes:
       - "$redisSharedVolume:/data"
-  
+
 networks:
   bithash:
     external:
