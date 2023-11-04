@@ -2,7 +2,7 @@ from utils.singleton import SingletonMeta
 import redis
 import pymongo
 from constants import DATABASE_NAME
-from schemas import InsertUrl, ShortUrlHash
+from schemas import InsertUrl
 import logging
 
 logger = logging.getLogger(__name__)

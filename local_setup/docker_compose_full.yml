@@ -1,0 +1,44 @@
+version: '2'
+services:
+  short_url-local-srvr:
+    build:
+      context: ../.
+      dockerfile: Dockerfile
+    hostname: short_url-local-srvr
+    container_name: short_url-local-srvr
+    networks:
+      - bithash
+    volumes:
+      - ../.:/bithash/short_url
+    environment:
+      - MODE=server
+    env_file:
+      - ".env"
+    tty: true
+    ports:
+      - "8000:80"
+  mongo:
+    image: mongo:7.0-rc
+    container_name: bithash_mongo
+    hostname: mongo
+    ports:
+      - "27017:27017"
+    networks:
+      - bithash
+    volumes:
+      - $mongoSharedVolume:/data/db
+  redis:
+    image: redis:7.2.3-alpine3.18
+    container_name: bithash_redis
+    hostname: redis
+    ports:
+      - "6379:6379"
+    networks:
+      - bithash
+    volumes:
+      - "$redisSharedVolume:/data"
+  
+networks:
+  bithash:
+    external:
+      name: bithash

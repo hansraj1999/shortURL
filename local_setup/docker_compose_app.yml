@@ -1,0 +1,25 @@
+version: '2'
+services:
+  short_url-local-srvr:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    hostname: short_url-local-srvr
+    container_name: short_url-local-srvr
+    networks:
+      - bithash
+    volumes:
+      - ../..:/bithash/short_url
+    environment:
+      - MODE=server
+    env_file:
+      - ".env"
+    tty: true
+    ports:
+      - "8000:80"
+
+  
+networks:
+  bithash:
+    external:
+      name: bithash

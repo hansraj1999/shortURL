@@ -35,5 +35,6 @@ class InsertUrl(BaseModel):
     custom_domain: Optional[str] = None
     hits: int = 0
 
+
 class ShortUrlHash(BaseModel):
     url_hash: str
