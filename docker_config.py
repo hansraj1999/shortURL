@@ -7,7 +7,7 @@ from utils.database_manager import DatabaseManager
 
 
 class DockerConfig:
-    REDIS_CONNECTION_STRING =  os.getenv("REDIS_CONNECTION_STRING", "bithash_mongo")
+    REDIS_CONNECTION_STRING =  os.getenv("REDIS_CONNECTION_STRING", "bithash_redis")
     REDIS_PORT = os.getenv("REDIS_PORT", 6379)
     allowed_chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
     sqids = Sqids(alphabet=allowed_chars)
