@@ -72,7 +72,7 @@ fi
 if [ -n "$rebuild" ]; then
   echo "Rebuild is requested."
   
-  docker-compose -f "/local_setup/docker_compose_full.yml" up  -d --build
+  docker-compose -f "./local_setup/docker_compose_full.yml" up  -d --build
 else
   # If rebuild is not requested, validate the 'mode' argument
   if [ -n "$mode" ]; then

@@ -21,7 +21,7 @@ services:
   mongo:
     image: mongo:7.0-rc
     container_name: bithash_mongo
-    hostname: mongo
+    hostname: bithash_mongo
     ports:
       - "27017:27017"
     networks:
@@ -32,7 +32,7 @@ services:
   redis:
     image: redis:7.2.3-alpine3.18
     container_name: bithash_redis
-    hostname: redis
+    hostname: bithash_redis
     ports:
       - "6379:6379"
     networks:
