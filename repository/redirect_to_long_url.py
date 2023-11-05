@@ -8,6 +8,6 @@ class Handler:
     def handle(self) -> str:
         doc = config.backend.fetch_long_url(self.url_hash)
         if not doc:
-            raise HTTPException(status_code=401, detail={
+            raise HTTPException(status_code=404, detail={
                             "message": "URL not found", "details": []})
         return doc["actual_url"]
