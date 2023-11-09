@@ -83,10 +83,10 @@ else
       echo "Mode is set to: $mode"
       if [ "$mode" == "full" ]; then
         echo "performing actions for mode=full."
-        docker-compose -f "./local_setup/docker_compose_full.yml" up  -d
+        docker-compose -f "./local_setup/docker_compose_full.yml" up
       elif [ "$mode" == "app" ]; then
         echo "performing actions for mode=app."
-        docker-compose -f "./local_setup/docker_compose_app.yml" up  -d
+        docker-compose -f "./local_setup/docker_compose_app.yml" up
       fi
     fi
   else
