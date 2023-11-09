@@ -36,4 +36,5 @@ class Handler:
                 "group_guid": self.group_guid,
             }
         )
+        config.backend.add_url_in_cache(url_hash, self.long_url)
         return url_hash
