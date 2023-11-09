@@ -10,7 +10,7 @@ from opentelemetry.instrumentation.requests import RequestsInstrumentor
 from opentelemetry.instrumentation.aiohttp_client import AioHttpClientInstrumentor
 from fastapi.responses import RedirectResponse
 from repository.redirect_to_long_url import Handler
-
+from schemas import RedirectModel
 import logging
 
 logger = logging.getLogger(__name__)
@@ -37,8 +37,8 @@ def start_server():
     @app.get("/")
     async def read_item():
         return {"home_page": "hello"}
-    
-    @app.get("/{short_url_hash}")
+
+    @app.get("/{short_url_hash}", response_model=RedirectModel)
     async def redirect_to_long_url(short_url_hash: str):
         handler = Handler(short_url_hash)
         url = handler.handle()
