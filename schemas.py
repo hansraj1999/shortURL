@@ -41,5 +41,5 @@ class ShortUrlHash(BaseModel):
 
 
 class RedirectModel(BaseModel):
-        url: str
-        status_code: int = 303
+    url: str
+    status_code: int = 303
