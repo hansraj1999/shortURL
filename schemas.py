@@ -39,6 +39,7 @@ class InsertUrl(BaseModel):
 class ShortUrlHash(BaseModel):
     url_hash: str
 
+
 class RedirectModel(BaseModel):
         url: str
         status_code: int = 303
