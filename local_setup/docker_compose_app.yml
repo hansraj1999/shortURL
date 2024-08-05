@@ -1,11 +1,11 @@
 version: '2'
 services:
-  short_url-local-srvr:
+  app:
     build:
       context: ../.
       dockerfile: Dockerfile
-    hostname: short_url-local-srvr
-    container_name: short_url-local-srvr
+    hostname: app
+    container_name: app
     networks:
       - bithash
     volumes:

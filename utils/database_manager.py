@@ -9,11 +9,15 @@ logger = logging.getLogger(__name__)
 
 
 class DatabaseManager(metaclass=SingletonMeta):
-    def __init__(self, redis_connection_string, redis_port, mongo_connection_string, mongo_port):
+    def __init__(
+        self, redis_connection_string, redis_port, mongo_connection_string, mongo_port
+    ):
         self.redis_connection = redis.StrictRedis(
-            host=redis_connection_string, port=redis_port, decode_responses=True)
+            host=redis_connection_string, port=redis_port, decode_responses=True
+        )
         self.mongo_connection = pymongo.MongoClient(
-            mongo_connection_string, mongo_port)[DATABASE_NAME]
+            mongo_connection_string, mongo_port
+        )[DATABASE_NAME]
 
     def increment_counter(self, lock_key):
         # distributed lock
@@ -29,9 +33,10 @@ class DatabaseManager(metaclass=SingletonMeta):
     def fetch_long_url(self, url_hash: str):
         url_hash = str(url_hash)
         logger.info(f"fetch_long_url: {url_hash}")
-        return self.mongo_connection["urls"].find_one({
-            "url_hash": url_hash
-        })
+        result = self.mongo_connection["urls"].find_one({"url_hash": url_hash})
+        if result:
+            self.add_url_in_cache(url_hash, )
+        return result
 
     def add_url_in_cache(self, key, value):
         self.redis_connection.set(key, value)

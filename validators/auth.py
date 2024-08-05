@@ -14,6 +14,7 @@ def validate_headers(headers: str) -> Dict[str, str]:
         UserData(**headers_dict)
     except ValidationError as e:
         logger.exception(e)
-        raise UnAuthorized("UnAuthorized", e.errors(
-            include_url=False, include_input=False))
+        raise UnAuthorized(
+            "UnAuthorized", e.errors(include_url=True, include_input=True)
+        )
     return headers_dict

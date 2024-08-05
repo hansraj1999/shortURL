@@ -1,0 +1,10 @@
+[
+  {
+    "targets": [
+      "app:8000"
+    ],
+    "labels": {
+      "job": "app"
+    }
+  }
+]

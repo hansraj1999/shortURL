@@ -1,5 +1,16 @@
 services:
-  short_url-local-srvr:
+  otel-collector:
+      image: otel/opentelemetry-collector:latest
+      container_name: otel-collector
+      volumes:
+        - ./otel-collector-config.yaml:/otel-local-config.yaml
+      command: ["--config", "/otel-local-config.yaml"]
+      ports:
+        - "9091:9091"
+        - "4317:4317"  # gRPC receiver port
+      networks:
+        - bithash
+  app:
     build:
       context: ../.
       dockerfile: Dockerfile
@@ -14,8 +25,10 @@ services:
     tty: true
     ports:
       - "8000"
+    depends_on:
+      - otel-collector
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://short_url-local-srvr:8000/healthz"]
+      test: ["CMD", "curl", "-f", "http://app:8000/healthz"]
       interval: 30s  # How often to run the check
       retries: 3      # Number of retries before marking the container as unhealthy
       start_period: 10s  # Grace period for containers to initialize
@@ -31,7 +44,7 @@ services:
       - bithash
     volumes:
 #      - $mongoSharedVolume:/data/db # use this if using via sh file
-      - H:\dev\mongo:/data/db # for windows
+      - ./database/mongo/data/db:/data/db # for windows
 
   redis:
     image: redis:7.2.3-alpine3.18
@@ -43,19 +56,47 @@ services:
       - bithash
     volumes:
 #     - "$redisSharedVolume:/data" # use this if using via sh file
-      - H:\dev\redis:/data:/data  # for windows
+      - ./database/redis/data:/data  # for windows
     
   nginx:
     image: nginx:stable-perl
     volumes:
-      - H:\dev\shortURL\local_setup\nginx.conf:/etc/nginx/nginx.conf:ro  # for windows
+    - ./nginx.conf:/etc/nginx/nginx.conf:ro
     depends_on:
-      - short_url-local-srvr
+      - app
     ports:
       - "80:80"
     networks:
       - bithash
 
+  
+  prometheus:
+    image: prom/prometheus:main
+    container_name: prometheus
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+      - ./targets:/etc/prometheus/targets
+    ports:
+      - "9090:9090"
+    networks:
+      - bithash
+    depends_on:
+      - otel-collector
+
+  grafana:
+    image: grafana/grafana:main
+    container_name: grafana
+    ports:
+      - "3000:3000"
+    networks:
+      - bithash
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin # change this and fetch from env var.
+    volumes:
+      - ./grafana/provisioning:/etc/grafana/provisioning
+      - ./grafana/dashboards:/etc/grafana/dashboards
+    depends_on:
+      - prometheus
 networks:
   bithash:
     external:

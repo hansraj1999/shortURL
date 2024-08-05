@@ -1,0 +1,30 @@
+{
+  "title": "HTTP Requests",
+  "dashboard": {
+    "id": null,
+    "uid": "example",
+    "title": "Example Dashboard",
+    "tags": [],
+    "timezone": "browser",
+    "schemaVersion": 30,
+    "version": 0,
+    "panels": [
+      {
+        "type": "graph",
+        "title": "HTTP Requests",
+        "targets": [
+          {
+            "expr": "http_requests_total",
+            "format": "time_series"
+          }
+        ],
+        "gridPos": {
+          "h": 9,
+          "w": 12,
+          "x": 0,
+          "y": 0
+        }
+      }
+    ]
+  }
+}

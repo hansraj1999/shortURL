@@ -6,4 +6,5 @@ class UnAuthorized(Exception):
         self.message = message
         self.details = details
         super().__init__()
+
     pass

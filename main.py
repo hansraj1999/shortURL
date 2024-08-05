@@ -13,6 +13,7 @@ from repository.redirect_to_long_url import Handler
 from schemas import RedirectModel
 import logging
 import socket
+from repository.metrics import measure_latency
 
 logger = logging.getLogger(__name__)
 
@@ -28,7 +29,7 @@ def start_server():
 
     app.add_middleware(
         CORSMiddleware,
-        allow_origins=['*'],
+        allow_origins=["*"],
         allow_credentials=True,
         allow_methods=["*"],
         allow_headers=["*"],
@@ -36,19 +37,28 @@ def start_server():
     app.include_router(short_url.router)
 
     @app.get("/")
+    @measure_latency("home")
     async def read_item():
         logger.info(socket.gethostname())
         return {"home_page": f"hello {socket.gethostname()}"}
 
     @app.get("/healthz")
+    @measure_latency("healthz")
     async def healthz():
         logger.info(f"health check done, {socket.gethostname()}")
         return {"ping": f"health check done {socket.gethostname()}"}
 
+    @app.get("/metrics")
+    @measure_latency("metrics")
+    async def metrics():
+        logger.info("metrics endpoint called")
+
     @app.get("/{short_url_hash}", response_model=RedirectModel)
+    @measure_latency("redirect")
     async def redirect_to_long_url(short_url_hash: str):
         handler = Handler(short_url_hash)
         url = handler.handle()
         logger.info(f"URL to be redirected to: {url} from hash: {short_url_hash}")
         return RedirectResponse(url=url, status_code=302)
+
     return app

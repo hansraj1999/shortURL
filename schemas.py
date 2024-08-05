@@ -4,9 +4,9 @@ from typing import Optional
 
 class ShortenTheURLRequestBody(BaseModel):
     long_url: str
-    group_guid: str = Optional # dk why is this is needed
-    qr_code: bool = Optional # for future
-    custom_domain: str = Optional # for future
+    group_guid: str = Optional  # dk why is this is needed
+    qr_code: bool = Optional  # for future
+    custom_domain: str = Optional  # for future
 
 
 class XUserData(BaseModel):
