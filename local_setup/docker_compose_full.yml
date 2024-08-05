@@ -1,11 +1,9 @@
-version: '2'
 services:
   short_url-local-srvr:
     build:
       context: ../.
       dockerfile: Dockerfile
     hostname: short_url-local-srvr
-    container_name: short_url-local-srvr
     networks:
       - bithash
     volumes:
@@ -16,7 +14,7 @@ services:
       - ".env"
     tty: true
     ports:
-      - "8000:8000"
+      - "8000"
 
   mongo:
     image: mongo:7.0-rc
@@ -27,7 +25,8 @@ services:
     networks:
       - bithash
     volumes:
-      - $mongoSharedVolume:/data/db
+#      - $mongoSharedVolume:/data/db # use this if using via sh file
+      - H:\dev\mongo:/data/db # for windows
 
   redis:
     image: redis:7.2.3-alpine3.18
@@ -38,7 +37,19 @@ services:
     networks:
       - bithash
     volumes:
-      - "$redisSharedVolume:/data"
+#     - "$redisSharedVolume:/data" # use this if using via sh file
+      - H:\dev\redis:/data:/data  # for windows
+    
+  nginx:
+    image: nginx:stable-perl
+    volumes:
+      - H:\dev\shortURL\local_setup\nginx.conf:/etc/nginx/nginx.conf:ro  # for windows
+    depends_on:
+      - short_url-local-srvr
+    ports:
+      - "80:80"
+    networks:
+      - bithash
 
 networks:
   bithash:
