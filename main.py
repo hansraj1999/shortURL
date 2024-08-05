@@ -40,6 +40,11 @@ def start_server():
         logger.info(socket.gethostname())
         return {"home_page": f"hello {socket.gethostname()}"}
 
+    @app.get("/healthz")
+    async def healthz():
+        logger.info(f"health check done, {socket.gethostname()}")
+        return {"ping": f"health check done {socket.gethostname()}"}
+
     @app.get("/{short_url_hash}", response_model=RedirectModel)
     async def redirect_to_long_url(short_url_hash: str):
         handler = Handler(short_url_hash)

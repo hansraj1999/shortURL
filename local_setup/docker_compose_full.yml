@@ -3,7 +3,6 @@ services:
     build:
       context: ../.
       dockerfile: Dockerfile
-    hostname: short_url-local-srvr
     networks:
       - bithash
     volumes:
@@ -15,6 +14,12 @@ services:
     tty: true
     ports:
       - "8000"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://short_url-local-srvr:8000/healthz"]
+      interval: 30s  # How often to run the check
+      retries: 3      # Number of retries before marking the container as unhealthy
+      start_period: 10s  # Grace period for containers to initialize
+      timeout: 3s     # How long to wait for the health check to complete
 
   mongo:
     image: mongo:7.0-rc
