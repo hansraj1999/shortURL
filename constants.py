@@ -8,6 +8,11 @@ LOGGING_CONFIG = {
     "formatters": {
         "custom_formatter": {
             "()": LogFormatter,
+            "format": (
+                '%(asctime)s - %(name)s - %(levelname)s - %(filename)s:%(lineno)d - '
+                'trace_id=%(trace_id)s span_id=%(span_id)s trace_flags=%(trace_flags)s - '
+                'service_name=%(service_name)s host=%(host)s - %(message)s'
+            ),
         }
     },
     "handlers": {

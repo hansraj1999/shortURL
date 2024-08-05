@@ -20,8 +20,6 @@ from opentelemetry.trace import (
 )
 import socket
 
-NON_REQ_DATA = ["thread", "args", "name", "threadName", "processName",
-                "process", "relativeCreated", "msecs", "stack_info", "exc_text"]
 resource = Resource(attributes={
     "service.name": "short-link-service",
     "environment": "dev",
@@ -30,59 +28,16 @@ resource = Resource(attributes={
 logger = logging.getLogger(__name__)
 trace.set_tracer_provider(TracerProvider(resource=resource))
 
-# span_processor = BatchSpanProcessor(OTLPSpanExporter(endpoint="localhost:4317"))
-# trace.get_tracer_provider().add_span_processor(
-#     span_processor
-# )
 
 
 class LogFormatter(logging.Formatter):
-    """LogFormatter."""
-    resource_attributes = {
-        "service.name": "short-link-service",
-        "host": socket.gethostname(),
-    }
-
-    def __init__(self, **kwargs):
-        super().__init__()
-
     def format(self, record):
-        """format."""
         span_context = get_current_span().get_span_context()
-        trace_id, span_id, trace_flags = span_context.trace_id, span_context.span_id, span_context.trace_flags
-        trace_id = format_trace_id(trace_id if trace_id else 0)
-        span_id = format_span_id(span_id if span_id else 0)
-
-        body = record.getMessage()
-        raw_attributes = vars(record)
-        if type(record.msg) == dict:
-            raw_attributes.update(record.msg)
-        exc_info = raw_attributes.get("exc_info")
-        custom_attributes = raw_attributes
-        for non_req_data in NON_REQ_DATA:
-            if non_req_data in custom_attributes:
-                del custom_attributes[non_req_data]
-        record_dict = {
-            "body": f"{body}",
-            "severity_number": record.levelno,
-            "severity_text": record.levelname,
-            "attributes": custom_attributes,
-            "timestamp": datetime.datetime.utcfromtimestamp(record.created).strftime("%Y-%m-%dT%H:%M:%S.%fZ"),
-            "trace_id": trace_id,
-            "span_id": span_id,
-            "trace_flags": trace_flags,
-            "resource": {
-                # "pathname": record.pathname,
-                "lineno": record.lineno,
-                **self.resource_attributes
-            }
-        }
-        if exc_info:
-            record_dict.update({"exc_info": exc_info})
-        try:
-            message_string = ujson.dumps(
-                record_dict)
-        except Exception as e:
-            message_string = json.dumps(
-                record_dict, indent=None, default=str)
-        return message_string
+        trace_id = format_trace_id(span_context.trace_id if span_context.trace_id else 0)
+        span_id = format_span_id(span_context.span_id if span_context.span_id else 0)
+        record.trace_id = trace_id
+        record.span_id = span_id
+        record.trace_flags = span_context.trace_flags if span_context.trace_flags else 0
+        record.service_name = "short-link-service"
+        record.host = socket.gethostname()
+        return super().format(record)
