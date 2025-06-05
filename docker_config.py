@@ -7,8 +7,10 @@ import string
 
 
 class DockerConfig:
-    REDIS_CONNECTION_STRING = os.getenv("REDIS_CONNECTION_STRING", "bithash_redis")
+    REDIS_HOST = os.getenv("REDIS_HOST", "bithash_redis")
     REDIS_PORT = os.getenv("REDIS_PORT", 6379)
+    REDIS_USERNAME = os.getenv("REDIS_USERNAME", "default")
+    REDIS_PASSWORD = os.getenv("REDIS_PASSWORD", "default")
     allowed_chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
     BASE62_ALPHABET = string.digits + string.ascii_letters
     BASE = 62
@@ -18,8 +20,9 @@ class DockerConfig:
     logging.config.dictConfig(LOGGING_CONFIG)
 
     backend = DatabaseManager(
-        REDIS_CONNECTION_STRING,
+        REDIS_HOST,
         REDIS_PORT,
+        REDIS_USERNAME,
+        REDIS_PASSWORD,
         MONGO_CONNECTION_STRING,
-        MONGO_CONNECTION_PORT,
     )

@@ -4,19 +4,29 @@ import pymongo
 from constants import DATABASE_NAME
 from schemas import InsertUrl
 import logging
+from pymongo.server_api import ServerApi
 
 logger = logging.getLogger(__name__)
 
 
 class DatabaseManager(metaclass=SingletonMeta):
     def __init__(
-        self, redis_connection_string, redis_port, mongo_connection_string, mongo_port
+        self,
+        redis_host,
+        redis_port,
+        redis_username,
+        redis_password,
+        mongo_connection_string,
     ):
         self.redis_connection = redis.StrictRedis(
-            host=redis_connection_string, port=redis_port, decode_responses=True
+            host=redis_host,
+            port=int(redis_port),
+            decode_responses=True,
+            username=redis_username,
+            password=redis_password,
         )
         self.mongo_connection = pymongo.MongoClient(
-            mongo_connection_string, mongo_port
+            mongo_connection_string, server_api=ServerApi("1")
         )[DATABASE_NAME]
 
     def increment_counter(self, lock_key):

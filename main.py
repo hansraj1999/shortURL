@@ -26,6 +26,7 @@ def start_server():
     RequestsInstrumentor().instrument()
     AioHttpClientInstrumentor().instrument()
     from repository.metrics import MetricsMiddleware
+
     app.add_middleware(MetricsMiddleware)
     app.add_middleware(
         CORSMiddleware,
@@ -34,7 +35,6 @@ def start_server():
         allow_methods=["*"],
         allow_headers=["*"],
     )
-    
 
     app.include_router(short_url.router)
 
