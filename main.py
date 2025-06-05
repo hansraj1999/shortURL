@@ -13,7 +13,6 @@ from repository.redirect_to_long_url import Handler
 from schemas import RedirectModel
 import logging
 import socket
-from repository.metrics import measure_latency
 
 logger = logging.getLogger(__name__)
 
@@ -26,7 +25,8 @@ def start_server():
     PymongoInstrumentor().instrument()
     RequestsInstrumentor().instrument()
     AioHttpClientInstrumentor().instrument()
-
+    from repository.metrics import MetricsMiddleware
+    app.add_middleware(MetricsMiddleware)
     app.add_middleware(
         CORSMiddleware,
         allow_origins=["*"],
@@ -34,27 +34,25 @@ def start_server():
         allow_methods=["*"],
         allow_headers=["*"],
     )
+    
+
     app.include_router(short_url.router)
 
     @app.get("/")
-    @measure_latency("home")
     async def read_item():
         logger.info(socket.gethostname())
         return {"home_page": f"hello {socket.gethostname()}"}
 
     @app.get("/healthz")
-    @measure_latency("healthz")
     async def healthz():
         logger.info(f"health check done, {socket.gethostname()}")
         return {"ping": f"health check done {socket.gethostname()}"}
 
     @app.get("/metrics")
-    @measure_latency("metrics")
     async def metrics():
         logger.info("metrics endpoint called")
 
     @app.get("/{short_url_hash}", response_model=RedirectModel)
-    @measure_latency("redirect")
     async def redirect_to_long_url(short_url_hash: str):
         handler = Handler(short_url_hash)
         url = handler.handle()

@@ -35,11 +35,14 @@ class DatabaseManager(metaclass=SingletonMeta):
         logger.info(f"fetch_long_url: {url_hash}")
         result = self.mongo_connection["urls"].find_one({"url_hash": url_hash})
         if result:
-            self.add_url_in_cache(url_hash, )
+            self.add_url_in_cache(
+                url_hash,
+            )
         return result
 
-    def add_url_in_cache(self, key, value):
+    def add_url_in_cache(self, key, value, ttl=3600):
         self.redis_connection.set(key, value)
+        self.redis_connection.expire(key, ttl)
         logger.info(f"Added url in cache: {key}")
 
     def get_url_from_cache(self, key):

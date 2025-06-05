@@ -11,8 +11,10 @@ from opentelemetry.sdk.metrics import MeterProvider
 from opentelemetry.sdk.metrics.export import (
     PeriodicExportingMetricReader,
 )
+from starlette.middleware.base import BaseHTTPMiddleware
 
 import socket
+from fastapi import Request
 
 from opentelemetry.sdk.metrics.export import PeriodicExportingMetricReader
 
@@ -33,19 +35,15 @@ REQUEST_LATENCY = meter.create_histogram(
 )
 
 
-def measure_latency(endpoint_name: str):
-    def decorator(func):
-        @wraps(func)
-        async def wrapper(*args, **kwargs):
-            # Start timing
-            start_time = time.time()
-            # Call the endpoint function
-            response = await func(*args, **kwargs)
-            # End timing and record duration
-            duration = time.time() - start_time
-            REQUEST_LATENCY.record(duration, {"endpoint": endpoint_name})
-            return response
+class MetricsMiddleware(BaseHTTPMiddleware):
+    async def dispatch(self, request: Request, call_next):
+        start_time = time.time()
+        response = await call_next(request)
+        latency = time.time() - start_time
+        print(str(request.url.path), "fiofnoo")
+        REQUEST_LATENCY.record(latency, {"endpoint": str(request.url.path)})
+        REQUEST_COUNT.add(
+            1, {"method": str(request.method), "endpoint": str(request.url.path)}
+        )
 
-        return wrapper
-
-    return decorator
+        return response
