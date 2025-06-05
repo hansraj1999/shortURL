@@ -17,7 +17,7 @@ WORKDIR /bithash/short_url
 RUN apk add curl
 COPY --from=builder /bithash/short_url /bithash/short_url
 COPY --from=builder /.venv /.venv
-EXPOSE 80
+EXPOSE 8080
 
 
 ENV PATH="/.venv/bin:$PATH"
