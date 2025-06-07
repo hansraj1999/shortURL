@@ -45,6 +45,7 @@ class DatabaseManager(metaclass=SingletonMeta):
         url_hash = str(url_hash)
         logger.info(f"fetch_long_url: {url_hash}")
         result = self.mongo_connection["urls"].find_one({"url_hash": url_hash})
+        logger.info(f"fetch_long_url mongo result: {result}")
         if result:
             self.add_url_in_cache(
                 url_hash,
