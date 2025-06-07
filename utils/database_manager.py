@@ -25,6 +25,7 @@ class DatabaseManager(metaclass=SingletonMeta):
             username=redis_username,
             password=redis_password,
         )
+        logger.info(f"MongoDB connection string: {mongo_connection_string}")
         self.mongo_connection = pymongo.MongoClient(
             mongo_connection_string, server_api=ServerApi("1")
         )[DATABASE_NAME]
