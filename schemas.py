@@ -1,5 +1,5 @@
 from pydantic import BaseModel, Field
-from typing import Optional
+from typing import Optional, List, Dict, Any
 
 
 class ShortenTheURLRequestBody(BaseModel):
@@ -34,6 +34,7 @@ class InsertUrl(BaseModel):
     has_custom_domain: bool = False
     custom_domain: Optional[str] = None
     hits: int = 0
+    last_redirected_at: Optional[str] = None
 
 
 class ShortUrlHash(BaseModel):
@@ -43,3 +44,18 @@ class ShortUrlHash(BaseModel):
 class RedirectModel(BaseModel):
     url: str
     status_code: int = 303
+
+
+class AnalyticsResponse(BaseModel):
+    total_urls: int
+    total_redirects: int
+    urls: List[Dict[str, Any]]
+
+
+class AnalyticsQueryParams(BaseModel):
+    sort_by: Optional[str] = "created_at"  # Options: hits, redirect_count, created_at, latest_shortened, last_redirected_at, latest_redirected
+    sort_order: Optional[str] = "desc"  # Options: asc, desc
+    filter_by_user_id: Optional[int] = None
+    filter_by_user_name: Optional[str] = None
+    limit: Optional[int] = 100
+    skip: Optional[int] = 0

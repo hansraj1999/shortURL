@@ -1,7 +1,7 @@
 import logging.config
 
 from fastapi import FastAPI
-from routers import short_url
+from routers import short_url, analytics
 from fastapi.middleware.cors import CORSMiddleware
 from opentelemetry.instrumentation.redis import RedisInstrumentor
 from opentelemetry.instrumentation.fastapi import FastAPIInstrumentor
@@ -38,6 +38,7 @@ def start_server():
     )
 
     app.include_router(short_url.router)
+    app.include_router(analytics.router)
 
     @app.get("/")
     async def read_item():
