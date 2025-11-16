@@ -28,6 +28,22 @@ Integrated Prometheus and Grafana to help monitor the service.
 
 ### Create a Short URL
 Use the following `curl` command to create a shortened URL:
+
+#### Basic Short URL (without QR code)
+```bash
+curl -X 'POST' \
+  'http://localhost/v1/shorten' \
+  -H 'accept: application/json' \
+  -H 'headers: {   "x-user-data": {  "role":"company",   "user_name": "hansraj",     "user_id": 1   },   "role": "company" }' \
+  -H 'Content-Type: application/json' \
+  -d '{
+  "long_url": "https://www.netflix.com/",
+  "group_guid": "string"
+}'
+```
+
+#### Short URL with QR Code
+To generate a QR code along with the short URL, set `qr_code` to `true`:
 ```bash
 curl -X 'POST' \
   'http://localhost/v1/shorten' \
@@ -37,10 +53,19 @@ curl -X 'POST' \
   -d '{
   "long_url": "https://www.netflix.com/",
   "group_guid": "string",
-  "qr_code": true,
-  "custom_domain": "string"
+  "qr_code": true
 }'
 ```
+
+**Response with QR code:**
+```json
+{
+  "short_url": "abc123",
+  "qr_code": "iVBORw0KGgoAAAANSUhEUgAA..."
+}
+```
+
+The `qr_code` field contains a base64-encoded PNG image of the QR code. You can decode it and display it in your application.
 
 ### Redirect to Original URL
 Use the following `curl` command to redirect from the shortened URL to the original URL:
@@ -173,6 +198,59 @@ To manually create indexes, run:
 ```bash
 python migerations/create_indexes.py
 ```
+
+## Configuration
+
+### BASE_URL Environment Variable
+
+The `BASE_URL` environment variable is used to build the full short URL for QR code generation and other purposes. It must include the protocol (http:// or https://).
+
+#### Examples
+
+**Production (HTTPS):**
+```bash
+export BASE_URL="https://shorturl.hansraj.me"
+```
+
+**Production with custom domain:**
+```bash
+export BASE_URL="https://s.example.com"
+```
+
+**Local development:**
+```bash
+export BASE_URL="http://localhost"
+```
+
+**Local development with port:**
+```bash
+export BASE_URL="http://localhost:8000"
+```
+
+**Docker environment:**
+```bash
+export BASE_URL="http://nginx:80"
+```
+
+#### Setting in Docker Compose
+
+Add to your `docker-compose.yml` or `.env` file:
+```yaml
+environment:
+  - BASE_URL=https://shorturl.hansraj.me
+```
+
+Or in `.env` file:
+```bash
+BASE_URL=https://shorturl.hansraj.me
+```
+
+#### Important Notes
+
+- **Must include protocol**: Always include `http://` or `https://`
+- **No trailing slash**: Don't add a trailing slash (e.g., use `https://example.com` not `https://example.com/`)
+- **Used for QR codes**: The BASE_URL is combined with the hash to create the full short URL in QR codes
+- **Example**: If `BASE_URL=https://shorturl.hansraj.me` and hash is `abc123`, the QR code will contain `https://shorturl.hansraj.me/abc123`
 
 ## Running Locally
 

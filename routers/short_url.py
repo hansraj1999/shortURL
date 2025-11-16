@@ -21,9 +21,14 @@ async def shorten_url_endpoint(
         logger.info(request)
         headers = validate_headers(headers)
         user_data = headers["x-user-data"]
-        handler = Handler(request.long_url, request.group_guid, user_data)
-        short_url = handler.handle()
-        return {"short_url": short_url}
+        handler = Handler(
+            request.long_url, 
+            request.group_guid, 
+            user_data,
+            qr_code=request.qr_code or False
+        )
+        result = handler.handle()
+        return result
 
     except UnAuthorized as e:
         logger.exception(e)

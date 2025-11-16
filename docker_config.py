@@ -17,6 +17,7 @@ class DockerConfig:
 
     MONGO_CONNECTION_STRING = os.getenv("MONGO_CONNECTION_STRING", "bithash_mongo")
     MONGO_CONNECTION_PORT = os.getenv("MONGO_CONNECTION_PORT", 27017)
+    BASE_URL = os.getenv("BASE_URL", "https://shorturl.hansraj.me")  # Base URL for short URLs (must include protocol)
     logging.config.dictConfig(LOGGING_CONFIG)
 
     backend = DatabaseManager(

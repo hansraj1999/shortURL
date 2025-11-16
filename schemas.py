@@ -4,9 +4,9 @@ from typing import Optional, List, Dict, Any
 
 class ShortenTheURLRequestBody(BaseModel):
     long_url: str
-    group_guid: str = Optional  # dk why is this is needed
-    qr_code: bool = Optional  # for future
-    custom_domain: str = Optional  # for future
+    group_guid: Optional[str] = None
+    qr_code: Optional[bool] = False
+    custom_domain: Optional[str] = None
 
 
 class XUserData(BaseModel):
@@ -21,6 +21,7 @@ class UserData(BaseModel):
 
 class ShortenUrlResponse(BaseModel):
     short_url: str
+    qr_code: Optional[str] = None  # Base64 encoded QR code image (if requested)
 
 
 class InsertUrl(BaseModel):

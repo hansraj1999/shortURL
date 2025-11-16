@@ -80,3 +80,5 @@ wrapt==1.15.0
 yarl==1.9.2
 zipp==3.17.0
 prometheus_client==0.20.0
+qrcode==7.4.2
+Pillow==10.1.0
