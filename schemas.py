@@ -57,5 +57,6 @@ class AnalyticsQueryParams(BaseModel):
     sort_order: Optional[str] = "desc"  # Options: asc, desc
     filter_by_user_id: Optional[int] = None
     filter_by_user_name: Optional[str] = None
+    filter_by_url_hash: Optional[str] = None  # Search by full short URL (hash)
     limit: Optional[int] = 100
     skip: Optional[int] = 0

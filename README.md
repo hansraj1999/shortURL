@@ -110,11 +110,20 @@ curl -X 'GET' \
   -H 'headers: {   "x-user-data": {  "role":"company",   "user_name": "hansraj",     "user_id": 1   },   "role": "company" }'
 ```
 
+#### Search by Short URL Hash
+```bash
+curl -X 'GET' \
+  'http://localhost/v1/analytics?filter_by_url_hash=abc123' \
+  -H 'accept: application/json' \
+  -H 'headers: {   "x-user-data": {  "role":"company",   "user_name": "hansraj",     "user_id": 1   },   "role": "company" }'
+```
+
 #### Analytics Query Parameters
 - `sort_by`: Sort field - Options: `hits`, `redirect_count`, `created_at`, `latest_shortened`, `last_redirected_at`, `latest_redirected` (default: `created_at`)
 - `sort_order`: Sort direction - Options: `asc`, `desc` (default: `desc`)
 - `filter_by_user_id`: Filter results by user ID (optional)
 - `filter_by_user_name`: Filter results by user name (optional)
+- `filter_by_url_hash`: Search by full short URL hash (optional)
 - `limit`: Number of results to return (default: 100, max: 1000)
 - `skip`: Number of results to skip for pagination (default: 0)
 

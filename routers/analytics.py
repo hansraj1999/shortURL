@@ -16,6 +16,7 @@ async def get_analytics(
     sort_order: str = Query(default="desc", description="Sort order: asc or desc"),
     filter_by_user_id: int = Query(default=None, description="Filter by user ID"),
     filter_by_user_name: str = Query(default=None, description="Filter by user name"),
+    filter_by_url_hash: str = Query(default=None, description="Filter by short URL hash (search by full short URL)"),
     limit: int = Query(default=100, ge=1, le=1000, description="Number of results to return"),
     skip: int = Query(default=0, ge=0, description="Number of results to skip"),
     headers: str = Header(...)
@@ -30,7 +31,10 @@ async def get_analytics(
       * hits/redirect_count: Sort by number of redirects
       * created_at/latest_shortened: Sort by creation date
       * last_redirected_at/latest_redirected: Sort by last redirect time
-    - Filtering by created_by (user_id or user_name)
+    - Filtering options:
+      * filter_by_user_id: Filter by user ID
+      * filter_by_user_name: Filter by user name
+      * filter_by_url_hash: Search by full short URL (hash)
     - Pagination support (limit and skip)
     """
     try:
@@ -44,6 +48,7 @@ async def get_analytics(
             sort_order=sort_order,
             filter_by_user_id=filter_by_user_id,
             filter_by_user_name=filter_by_user_name,
+            filter_by_url_hash=filter_by_url_hash,
             limit=limit,
             skip=skip
         )
@@ -51,12 +56,14 @@ async def get_analytics(
         # Get total counts
         total_urls = config.backend.get_total_urls_count(
             filter_by_user_id=filter_by_user_id,
-            filter_by_user_name=filter_by_user_name
+            filter_by_user_name=filter_by_user_name,
+            filter_by_url_hash=filter_by_url_hash
         )
         
         total_redirects = config.backend.get_total_redirects_count(
             filter_by_user_id=filter_by_user_id,
-            filter_by_user_name=filter_by_user_name
+            filter_by_user_name=filter_by_user_name,
+            filter_by_url_hash=filter_by_url_hash
         )
         
         return {

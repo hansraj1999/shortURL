@@ -81,22 +81,26 @@ class DatabaseManager(metaclass=SingletonMeta):
         )
         logger.info(f"Incremented redirect count for {url_hash}")
 
-    def get_total_urls_count(self, filter_by_user_id: Optional[int] = None, filter_by_user_name: Optional[str] = None):
+    def get_total_urls_count(self, filter_by_user_id: Optional[int] = None, filter_by_user_name: Optional[str] = None, filter_by_url_hash: Optional[str] = None):
         """Get total count of shortened URLs."""
         query = {}
         if filter_by_user_id:
             query["user_id"] = filter_by_user_id
         if filter_by_user_name:
             query["user_name"] = filter_by_user_name
+        if filter_by_url_hash:
+            query["url_hash"] = filter_by_url_hash
         return self.mongo_connection["urls"].count_documents(query)
 
-    def get_total_redirects_count(self, filter_by_user_id: Optional[int] = None, filter_by_user_name: Optional[str] = None):
+    def get_total_redirects_count(self, filter_by_user_id: Optional[int] = None, filter_by_user_name: Optional[str] = None, filter_by_url_hash: Optional[str] = None):
         """Get total count of all redirects (sum of all hits)."""
         query = {}
         if filter_by_user_id:
             query["user_id"] = filter_by_user_id
         if filter_by_user_name:
             query["user_name"] = filter_by_user_name
+        if filter_by_url_hash:
+            query["url_hash"] = filter_by_url_hash
         
         pipeline = [
             {"$match": query},
@@ -111,6 +115,7 @@ class DatabaseManager(metaclass=SingletonMeta):
         sort_order: str = "desc",
         filter_by_user_id: Optional[int] = None,
         filter_by_user_name: Optional[str] = None,
+        filter_by_url_hash: Optional[str] = None,
         limit: int = 100,
         skip: int = 0
     ):
@@ -124,6 +129,8 @@ class DatabaseManager(metaclass=SingletonMeta):
             query["user_id"] = filter_by_user_id
         if filter_by_user_name:
             query["user_name"] = filter_by_user_name
+        if filter_by_url_hash:
+            query["url_hash"] = filter_by_url_hash
 
         # Map sort_by to MongoDB field names
         sort_mapping = {
