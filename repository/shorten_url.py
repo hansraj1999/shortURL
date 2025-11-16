@@ -13,17 +13,26 @@ class Handler:
         self.group_guid = group_guid
         self.user_data = user_data
 
-    def check_url_and_update_url(self):
-        if self.long_url.startswith("http://") or self.long_url.startswith("https://"):
-            return
-        self.long_url = "http://" + self.long_url
+    def normalize_url(self):
+        """Normalize the URL by ensuring it has a protocol and trimming whitespace."""
+        self.long_url = self.long_url.strip()
+        if not self.long_url.startswith("http://") and not self.long_url.startswith("https://"):
+            self.long_url = "http://" + self.long_url
 
     def handle(self) -> str:
-        """handle."""
+        """
+        Handle URL shortening.
+        Always creates a new short URL to enable per-user tracking and analytics.
+        """
+        # Normalize the URL first
+        self.normalize_url()
+        
+        # Always create a new short URL (no deduplication)
+        # This allows tracking who created each URL and their individual hit counts
         counter = config.backend.increment_counter(LOCK_KEY)
-        self.check_url_and_update_url()
-        logger.info(f"counter: {counter}")
+        logger.info(f"Creating new short URL, counter: {counter}")
         url_hash = encode_url(counter)
+        
         config.backend.insert_into_mongo(
             {
                 "actual_url": self.long_url,
@@ -37,4 +46,5 @@ class Handler:
             }
         )
         config.backend.add_url_in_cache(url_hash, self.long_url)
+        logger.info(f"Created new short URL: {url_hash} for {self.long_url} by user {self.user_data['user_name']}")
         return url_hash

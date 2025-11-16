@@ -118,6 +118,38 @@ curl -X 'GET' \
 - `limit`: Number of results to return (default: 100, max: 1000)
 - `skip`: Number of results to skip for pagination (default: 0)
 
+## Hash Length and Capacity
+
+The URL shortening system uses Base62 encoding (0-9, a-z, A-Z) to generate unique short URLs. The hash length automatically adjusts based on the number of URLs created.
+
+### Hash Length Breakdown
+
+| Hash Length | Maximum URLs | Counter Range | Example Hash |
+|------------|--------------|---------------|--------------|
+| 1 char | 61 | 1 to 61 | `1`, `Z` |
+| 2 chars | 3,844 | 62 to 3,844 | `10`, `ZZ` |
+| 3 chars | 238,328 | 3,845 to 238,328 | `100`, `ZZZ` |
+| 4 chars | 14,776,336 | 238,329 to 14,776,336 | `1000`, `ZZZZ` |
+| 5 chars | 916,132,832 | 14,776,337 to 916,132,832 | `10000`, `ZZZZZ` |
+| 6 chars | 56,800,235,584 | 916,132,833 to 56,800,235,584 | `100000`, `ZZZZZZ` |
+| 7 chars | 3,521,614,606,207 | 56,800,235,585 to 3,521,614,606,207 | `1000000`, `ZZZZZZZ` |
+| 8 chars | 218,340,105,584,896 | 3,521,614,606,208+ | `10000000`, `ZZZZZZZZ` |
+
+### Key Points
+
+- **Maximum URLs with 7-character hash**: **3,521,614,606,207** (approximately 3.5 trillion)
+- **Last 7-character hash**: `ZZZZZZZ` (counter: 3,521,614,606,207)
+- **Automatic scaling**: Hash length increases automatically when the limit is reached
+- **No code changes needed**: The encoding function handles variable-length hashes seamlessly
+- **Redis compatibility**: Redis INCR supports up to 9,223,372,036,854,775,807 (64-bit signed integer), which is more than sufficient for 7-char and 8-char hashes
+
+### How It Works
+
+1. **Counter starts at 1**: Redis INCR initializes the counter to 0, then increments to 1 for the first URL
+2. **Base62 encoding**: Each counter value is converted to a Base62 string (0-9, a-z, A-Z)
+3. **Variable length**: Hash length automatically increases as more URLs are created
+4. **Unique hashes**: Each URL gets a unique hash based on the incrementing counter
+
 ## Database Schema and Indexes
 
 For detailed information about the database schema and indexes, see [Database Schema Documentation](docs/DATABASE_SCHEMA.md).

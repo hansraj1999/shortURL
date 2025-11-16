@@ -36,10 +36,14 @@ class DatabaseManager(metaclass=SingletonMeta):
         self.create_indexes()
 
     def increment_counter(self, lock_key):
-        # distributed lock
-        with self.redis_connection.lock(lock_key):
-            counter = self.redis_connection.incr("url_counter")
-            return counter
+        """
+        Atomically increment the URL counter.
+        Redis INCR is already atomic, so no lock is needed.
+        The lock_key parameter is kept for backward compatibility but not used.
+        """
+        # Redis INCR is atomic, so no lock needed
+        counter = self.redis_connection.incr("url_counter")
+        return counter
 
     def insert_into_mongo(self, data: InsertUrl):
         logger.info("insert_into_mongo: %s", data)
